@@ -13,14 +13,40 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = ['G','PG','PG-13','R']
+    
     if params.has_key?("sort")
-      if params[:sort] == "title"
-        @movies = Movie.order :title
-      elsif params[:sort] == "date"
-        @movies = Movie.order :release_date
+      session[:sort] = params[:sort]
+    end
+    
+    if params.has_key?("ratings")
+      session[:ratings] = params[:ratings]
+    end
+    
+    if session.has_key?("ratings")
+      @ratings_sort = true
+    end
+    
+    if session.has_key?("sort")
+      if session[:sort] == "title"
+        if @ratings_sort
+          @movies = Movie.where(rating: session[:ratings].keys).order :title
+        else
+          @movies = Movie.order :title
+        end
+      elsif session[:sort] == "date"
+        if @ratings_sort
+          @movies = Movie.where(rating: session[:ratings].keys).order :release_date
+        else
+          @movies = Movie.order :release_date
+        end
       end
     else
-      @movies = Movie.all
+      if @ratings_sort
+        @movies = Movie.where rating: session[:ratings].keys
+      else
+        @movies = Movie.all
+      end
     end
   end
 
