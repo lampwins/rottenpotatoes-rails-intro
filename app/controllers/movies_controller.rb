@@ -13,7 +13,8 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = ['G','PG','PG-13','R']
+    @all_ratings = Movie.ratings
+    @selected_checks = []
     
     if params.has_key?("sort")
       session[:sort] = params[:sort]
@@ -21,6 +22,9 @@ class MoviesController < ApplicationController
     
     if params.has_key?("ratings")
       session[:ratings] = params[:ratings]
+      @selected_checks = session[:ratings]
+    else
+      session.delete(:ratings)
     end
     
     if session.has_key?("ratings")
