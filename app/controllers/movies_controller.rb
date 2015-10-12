@@ -16,6 +16,11 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings
     @selected_checks = []
     
+    if !params.has_key?("ratings") and session.has_key?("ratings")
+      flash.keep
+      redirect_to movies_path :sort => params[:sort].nil? ? session[:sort] : params[:sort], :ratings => session[:ratings].nil? ? @all_ratings : session[:ratings] and return
+    end
+    
     if params.has_key?("sort")
       session[:sort] = params[:sort]
     end
